@@ -1,0 +1,17 @@
+1) Selecting the "Watch Face" template presents you with a fully functioning watch face that you can customize.
+2) The actual watch graphics are customized in the drawWatchface() method and called in the onDraw() method.
+	2.1) hour ticks:
+  
+            val innerTickRadius = mCenterX - 10 // The end of the tick closest to the center will be the screen width -10
+            val outerTickRadius = mCenterX      // The opposite end of the tick will be on the edge of the screen meaning the length of our hour ticks are 10
+            for (tickIndex in 0..11) { //calculation to place hour ticks evenly across the edge of the device
+                val tickRot = (tickIndex.toDouble() * Math.PI * 2.0 / 12).toFloat()
+                val innerX = Math.sin(tickRot.toDouble()).toFloat() * innerTickRadius
+                val innerY = (-Math.cos(tickRot.toDouble())).toFloat() * innerTickRadius
+                val outerX = Math.sin(tickRot.toDouble()).toFloat() * outerTickRadius
+                val outerY = (-Math.cos(tickRot.toDouble())).toFloat() * outerTickRadius
+                canvas.drawLine(mCenterX + innerX, mCenterY + innerY,
+                        mCenterX + outerX, mCenterY + outerY, mTickAndCirclePaint) //Draws the ticks on the screen
+            }
+            
+	2.2) Hour text: Add "canvas.drawText(hour, (mCenterX + innerX), (mCenterY + innerY), mTickAndCirclePaint)" after the canvas.drawLine command (This needs work)
