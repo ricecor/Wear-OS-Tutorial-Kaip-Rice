@@ -36,6 +36,6 @@ How to change the Background image:
 
 How yo add numbers to hour tick marks:
 
-How to color your clock components:
+How to style your clock components:
 
 
