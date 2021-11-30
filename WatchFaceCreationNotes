@@ -17,3 +17,23 @@
 	2.2) Hour text: Add "canvas.drawText(hour, (mCenterX + innerX), (mCenterY + innerY), mTickAndCirclePaint)" after the canvas.drawLine command (This needs work)
 	
 3) To change the watchface background, find the initializeBackground() function and and replace R.drawable._______ with R.drawable.yourimage.jpg. Remember to upload this file to app/res/drawable/.
+4) You define the color, font, and size of lines or text by creating a Paint() object.
+	4a) mSecondPaint = Paint().apply {
+                color = mWatchHandHighlightColor
+                strokeWidth = SECOND_TICK_STROKE_WIDTH
+                isAntiAlias = true
+                strokeCap = Paint.Cap.ROUND
+                setShadowLayer(
+                    SHADOW_RADIUS, 0f, 0f, mWatchHandShadowColor
+                )
+            }
+
+            mTickAndCirclePaint = Paint().apply {
+                color = mWatchHandColor
+                strokeWidth = SECOND_TICK_STROKE_WIDTH
+                isAntiAlias = true
+                style = Paint.Style.STROKE
+                setShadowLayer(
+                    SHADOW_RADIUS, 0f, 0f, mWatchHandShadowColor
+                )
+            }
