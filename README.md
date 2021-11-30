@@ -7,7 +7,7 @@ To start, we will be working with Kotlin through the Intelij IDE with Android St
 
 # First Time Setup
 When you first launch the app you will click New Project at the top right of the first window. You will then be presented with a couple of different types of templates. Click on Wear OS shown here:
-
+<img width="899" alt="Screen Shot 2021-11-21 at 2 41 52 PM" src="https://user-images.githubusercontent.com/59663943/144114374-6d616114-6a07-4aff-b304-7e8eb258b90c.png">
 
 For this tutorial we are going to start with the watch face template. After selecting that click Next. On this window you can name your project and where to save it. Be sure to have the languge selection be Kotlin as shown below:
 ![](Wear-OS-Tutorial-Kaip-Rice/WatchFaceTutorial/TutorialScreenshots/Screen Shot 2021-11-21 at 2.51.28 PM.png)
