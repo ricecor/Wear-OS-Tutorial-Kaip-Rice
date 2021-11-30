@@ -23,3 +23,6 @@ NOTE: There may be an error in your Manifest.xml file when running the simulator
 android:exported="true">
 ```
 With the greater than sign closing the service block.
+
+One more note to get started. To launch the project make sure you edit your configuration and make launch option Nothing since there is no activity in a watch face to launch. See image below:
+<img width="1075" alt="Screen Shot 2021-11-30 at 2 35 04 PM" src="https://user-images.githubusercontent.com/59663943/144116964-916babc9-ef32-47f0-84b2-0894687f266b.png">
