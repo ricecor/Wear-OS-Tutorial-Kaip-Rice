@@ -10,7 +10,7 @@ When you first launch the app you will click New Project at the top right of the
 <img width="899" alt="Screen Shot 2021-11-21 at 2 41 52 PM" src="https://user-images.githubusercontent.com/59663943/144114374-6d616114-6a07-4aff-b304-7e8eb258b90c.png">
 
 For this tutorial we are going to start with the watch face template. After selecting that click Next. On this window you can name your project and where to save it. Be sure to have the languge selection be Kotlin as shown below:
-![](Wear-OS-Tutorial-Kaip-Rice/WatchFaceTutorial/TutorialScreenshots/Screen Shot 2021-11-21 at 2.51.28 PM.png)
+<img width="901" alt="Screen Shot 2021-11-21 at 2 51 28 PM" src="https://user-images.githubusercontent.com/59663943/144114529-71c36a82-9046-4d23-9379-5a1a292c3cce.png">
 
 After the project loads you will have to select your simulator. This is going to be the watch face that you will run and test you face on. To do this, you must go to the tools drop down and select AVD Manager:
 
