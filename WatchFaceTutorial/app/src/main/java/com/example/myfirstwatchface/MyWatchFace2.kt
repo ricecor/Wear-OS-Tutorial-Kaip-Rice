@@ -186,7 +186,7 @@ class MyWatchFace2 : CanvasWatchFaceService() {
                 typeface = NORMAL_TYPEFACE
                 isAntiAlias = true
                 color = Color.BLACK
-                setShadowLayer(6f, 2f, 2f, Color.rgb(255, 186, 1))
+                //setShadowLayer(6f, 2f, 2f, Color.rgb(255, 186, 1))
                 textAlign = Paint.Align.CENTER
 
             }

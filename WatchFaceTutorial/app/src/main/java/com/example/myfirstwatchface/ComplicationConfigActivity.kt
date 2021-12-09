@@ -67,8 +67,8 @@ class ComplicationConfigActivity : Activity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //setContentView(R.layout.activity_config)
-        //mDefaultAddComplicationDrawable = getDrawable(R.drawable.add_complication)
+        setContentView(R.layout.activity_config)
+        mDefaultAddComplicationDrawable = getDrawable(R.drawable.add_complication)
 
         // TODO: Step 3, initialize 1
         mSelectedComplicationId = -1
@@ -81,20 +81,20 @@ class ComplicationConfigActivity : Activity(), View.OnClickListener {
         )
 
         // Sets up left complication preview.
-        /*mLeftComplicationBackground =
+        mLeftComplicationBackground =
             findViewById<View>(R.id.left_complication_background) as ImageView
         mLeftComplication = findViewById<View>(R.id.left_complication) as ImageButton
-        mLeftComplication!!.setOnClickListener(this)*/
+        mLeftComplication!!.setOnClickListener(this)
 
         // Sets default as "Add Complication" icon.
         mLeftComplication!!.setImageDrawable(mDefaultAddComplicationDrawable)
         mLeftComplicationBackground!!.visibility = View.INVISIBLE
 
         // Sets up right complication preview.
-        /*mRightComplicationBackground =
+        mRightComplicationBackground =
             findViewById<View>(R.id.right_complication_background) as ImageView
         mRightComplication = findViewById<View>(R.id.right_complication) as ImageButton
-        mRightComplication!!.setOnClickListener(this)*/
+        mRightComplication!!.setOnClickListener(this)
 
         // Sets default as "Add Complication" icon.
         mRightComplication!!.setImageDrawable(mDefaultAddComplicationDrawable)
