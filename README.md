@@ -39,3 +39,7 @@ How yo add numbers to hour tick marks:
 How to style your clock components:
 
 
+# Digital Watch Face Tutorial
+
+Youtube Tutorial:
+https://www.youtube.com/watch?v=5iJZ_JTUXZc
