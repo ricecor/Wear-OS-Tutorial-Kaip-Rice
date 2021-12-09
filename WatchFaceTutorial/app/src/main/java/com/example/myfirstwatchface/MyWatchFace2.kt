@@ -5,20 +5,26 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.*
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import androidx.core.content.ContextCompat
+import android.support.wearable.complications.ComplicationData
+import android.support.wearable.complications.rendering.ComplicationDrawable
 import android.support.wearable.watchface.CanvasWatchFaceService
 import android.support.wearable.watchface.WatchFaceService
 import android.support.wearable.watchface.WatchFaceStyle
+import android.util.Log
+import android.util.SparseArray
 import android.view.SurfaceHolder
 import android.view.WindowInsets
 import android.widget.Toast
-
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import com.example.myfirstwatchface.ComplicationConfigActivity.ComplicationLocation
 import java.lang.ref.WeakReference
-import java.util.Calendar
-import java.util.TimeZone
+import java.util.*
+
 
 /**
  * Digital watch face with seconds. In ambient mode, the seconds aren"t displayed. On devices with
@@ -34,9 +40,59 @@ import java.util.TimeZone
  */
 class MyWatchFace2 : CanvasWatchFaceService() {
 
+    //1
+    private val LEFT_COMPLICATION_ID = 0
+    private val RIGHT_COMPLICATION_ID = 1
+
+    private val COMPLICATION_IDS = intArrayOf(LEFT_COMPLICATION_ID, RIGHT_COMPLICATION_ID)
+
+    private var mActiveComplicationDataSparseArray: SparseArray<ComplicationData>? = null
+
+    private var mComplicationDrawableSparseArray: SparseArray<ComplicationDrawable>? = null
+
+    private val COMPLICATION_SUPPORTED_TYPES = arrayOf(
+        intArrayOf(
+            ComplicationData.TYPE_RANGED_VALUE,
+            ComplicationData.TYPE_ICON,
+            ComplicationData.TYPE_SHORT_TEXT,
+            ComplicationData.TYPE_SMALL_IMAGE
+        ), intArrayOf(
+            ComplicationData.TYPE_RANGED_VALUE,
+            ComplicationData.TYPE_ICON,
+            ComplicationData.TYPE_SHORT_TEXT,
+            ComplicationData.TYPE_SMALL_IMAGE
+        )
+    )
+
+    fun getComplicationId(
+        complicationLocation: ComplicationLocation?
+    ): Int {
+        // Add any other supported locations here you would like to support. In our case, we are
+        // only supporting a left and right complication.
+        return when (complicationLocation) {
+            ComplicationLocation.LEFT -> LEFT_COMPLICATION_ID
+            ComplicationLocation.RIGHT -> RIGHT_COMPLICATION_ID
+            else -> -1
+        }
+    }
+
+    fun getComplicationIds(): IntArray {
+        return COMPLICATION_IDS
+    }
+
+    fun getSupportedComplicationTypes(
+        complicationLocation: ComplicationLocation?
+    ): IntArray {
+        // Add any other supported locations here.
+        return when (complicationLocation) {
+            ComplicationLocation.LEFT -> COMPLICATION_SUPPORTED_TYPES[0]
+            ComplicationLocation.RIGHT -> COMPLICATION_SUPPORTED_TYPES[1]
+            else -> intArrayOf()
+        }
+    }
+    //1
+
     companion object {
-
-
         /**
          * Updates rate in milliseconds for interactive mode. We update once a second since seconds
          * are displayed in interactive mode.
@@ -107,6 +163,10 @@ class MyWatchFace2 : CanvasWatchFaceService() {
                     .build()
             )
 
+            //3
+            initializeComplications()
+            //3
+
             mCalendar = Calendar.getInstance()
 
             val resources = this@MyWatchFace2.resources
@@ -136,6 +196,39 @@ class MyWatchFace2 : CanvasWatchFaceService() {
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME)
             super.onDestroy()
         }
+
+        //2
+        private fun initializeComplications() {
+            Log.d("Complication:", "initializeComplications() ran")
+            mActiveComplicationDataSparseArray = SparseArray(COMPLICATION_IDS.size)
+            val leftComplicationDrawable =
+                getDrawable(R.drawable.custom_complication_styles) as ComplicationDrawable?
+            leftComplicationDrawable!!.setContext(applicationContext)
+            val rightComplicationDrawable =
+                getDrawable(R.drawable.custom_complication_styles) as ComplicationDrawable?
+            rightComplicationDrawable!!.setContext(applicationContext)
+            mComplicationDrawableSparseArray = SparseArray(COMPLICATION_IDS.size)
+            mComplicationDrawableSparseArray!!.put(LEFT_COMPLICATION_ID, leftComplicationDrawable)
+            mComplicationDrawableSparseArray!!.put(RIGHT_COMPLICATION_ID, rightComplicationDrawable)
+            setActiveComplications(LEFT_COMPLICATION_ID)
+            setActiveComplications(RIGHT_COMPLICATION_ID)
+        }
+
+        override fun onComplicationDataUpdate(
+            complicationId: Int, complicationData: ComplicationData?
+        ) {
+            Log.d("Complications:", "onComplicationDataUpdate() id: $complicationId")
+
+            // Adds/updates active complication data in the array.
+            mActiveComplicationDataSparseArray!!.put(complicationId, complicationData)
+
+            // Updates correct ComplicationDrawable with updated data.
+            val complicationDrawable = mComplicationDrawableSparseArray!![complicationId]
+            complicationDrawable.setComplicationData(complicationData)
+            invalidate()
+        }
+
+        //2
 
         override fun onPropertiesChanged(properties: Bundle) {
             super.onPropertiesChanged(properties)
@@ -198,6 +291,37 @@ class MyWatchFace2 : CanvasWatchFaceService() {
                 (mBackgroundBitmap.height * scaleH).toInt(), true
             )
             mYOffset = mBackgroundBitmap.height / 2f
+
+            //4
+            val sizeOfComplication = width / 4
+            val midpointOfScreen = width / 2
+
+            val horizontalOffset = (midpointOfScreen - sizeOfComplication) / 2
+            val verticalOffset = midpointOfScreen - sizeOfComplication / 2
+
+            val leftBounds =  // Left, Top, Right, Bottom
+                Rect(
+                    horizontalOffset,
+                    verticalOffset,
+                    horizontalOffset + sizeOfComplication,
+                    verticalOffset + sizeOfComplication
+                )
+
+            val leftComplicationDrawable = mComplicationDrawableSparseArray!![LEFT_COMPLICATION_ID]
+            leftComplicationDrawable.bounds = leftBounds
+
+            val rightBounds =  // Left, Top, Right, Bottom
+                Rect(
+                    midpointOfScreen + horizontalOffset,
+                    verticalOffset,
+                    midpointOfScreen + horizontalOffset + sizeOfComplication,
+                    verticalOffset + sizeOfComplication
+                )
+
+            val rightComplicationDrawable =
+                mComplicationDrawableSparseArray!![RIGHT_COMPLICATION_ID]
+            rightComplicationDrawable.bounds = rightBounds
+            //4
         }
 
         override fun onDraw(canvas: Canvas, bounds: Rect) {
@@ -224,6 +348,19 @@ class MyWatchFace2 : CanvasWatchFaceService() {
                 )
             canvas.drawText(text, mYOffset, mYOffset, mTextPaint)
         }
+
+        @RequiresApi(Build.VERSION_CODES.S)
+        private fun drawComplications(canvas: Canvas, currentTimeMillis: Long) {
+            // TODO: Step 4, drawComplications()
+            var complicationId: Int
+            var complicationDrawable: ComplicationDrawable
+            for (i in 0 until COMPLICATION_IDS.size) {
+                complicationId = COMPLICATION_IDS[i]
+                complicationDrawable = mComplicationDrawableSparseArray!![complicationId]
+                complicationDrawable.draw(canvas, currentTimeMillis)
+            }
+        }
+
 
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
