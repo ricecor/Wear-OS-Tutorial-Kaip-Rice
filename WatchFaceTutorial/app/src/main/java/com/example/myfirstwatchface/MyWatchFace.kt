@@ -195,14 +195,14 @@ class MyWatchFace : CanvasWatchFaceService() {
                 color = Color.BLACK
             }
             mBackgroundBitmap =
-                BitmapFactory.decodeResource(resources, R.drawable.watchface_service_bg)
+                BitmapFactory.decodeResource(resources, R.drawable.background_image)
 
             /* Extracts colors from background image to improve watchface style. */
             Palette.from(mBackgroundBitmap).generate {
                 it?.let {
-                    mWatchHandHighlightColor = it.getVibrantColor(Color.RED)
-                    mWatchHandColor = it.getLightVibrantColor(Color.WHITE)
-                    mWatchHandShadowColor = it.getDarkMutedColor(Color.BLACK)
+                    mWatchHandHighlightColor = it.getVibrantColor(Color.GREEN)
+                    mWatchHandColor = it.getLightVibrantColor(Color.RED)
+                    mWatchHandShadowColor = it.getDarkMutedColor(Color.GREEN)
                     updateWatchHandStyle()
                 }
             }
@@ -210,9 +210,9 @@ class MyWatchFace : CanvasWatchFaceService() {
 
         private fun initializeWatchFace() {
             /* Set defaults for colors */
-            mWatchHandColor = Color.WHITE
-            mWatchHandHighlightColor = Color.RED
-            mWatchHandShadowColor = Color.BLACK
+            mWatchHandColor = Color.RED
+            mWatchHandHighlightColor = Color.GREEN
+            mWatchHandShadowColor = Color.GREEN
 
             mHourPaint = Paint().apply {
                 color = mWatchHandColor
@@ -507,6 +507,8 @@ class MyWatchFace : CanvasWatchFaceService() {
                     mCenterX + innerX, mCenterY + innerY,
                     mCenterX + outerX, mCenterY + outerY, mTickAndCirclePaint
                 )
+                val hour = (tickIndex).toString()
+                canvas.drawText(hour, (mCenterX + innerX), (mCenterY + innerY), mTickAndCirclePaint)
             }
 
             /*
