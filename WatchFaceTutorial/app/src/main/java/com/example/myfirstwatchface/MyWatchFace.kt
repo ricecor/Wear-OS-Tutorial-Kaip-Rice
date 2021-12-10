@@ -26,6 +26,8 @@ import java.lang.ref.WeakReference
 import java.util.Calendar
 import java.util.TimeZone
 
+//TODO Step 10: Add import to include config file
+
 /**
  * Updates rate in milliseconds for interactive mode. We update once a second to advance the
  * second hand.
@@ -59,6 +61,17 @@ private const val SHADOW_RADIUS = 6f
  * https://codelabs.developers.google.com/codelabs/watchface/index.html#0
  */
 class MyWatchFace : CanvasWatchFaceService() {
+
+    //TODO Step 1.2: Instantiate complication IDs
+
+
+    //TODO Step 1.2: getComplicationID()
+
+
+    //TODO Step 1.3: getComplicationIDs()
+
+
+    //TODO Step 1.4: getSupportedComplicationTypes()
 
     override fun onCreateEngine(): Engine {
         return Engine()
@@ -118,6 +131,8 @@ class MyWatchFace : CanvasWatchFaceService() {
             }
         }
 
+        //TODO Step 2: Instantiate sparse arrays
+
         override fun onCreate(holder: SurfaceHolder) {
             super.onCreate(holder)
 
@@ -131,6 +146,8 @@ class MyWatchFace : CanvasWatchFaceService() {
 
             initializeBackground()
             initializeWatchFace()
+
+            //TODO Step 3: add initializeComplications()
         }
 
         private fun initializeBackground() {
@@ -211,6 +228,9 @@ class MyWatchFace : CanvasWatchFaceService() {
             mBurnInProtection = properties.getBoolean(
                 WatchFaceService.PROPERTY_BURN_IN_PROTECTION, false
             )
+
+            //TODO Step 4: Update onPropertiesChanged()
+
         }
 
         override fun onTimeTick() {
@@ -223,6 +243,8 @@ class MyWatchFace : CanvasWatchFaceService() {
             mAmbient = inAmbientMode
 
             updateWatchHandStyle()
+
+            //TODO Step 5: Do something similar for onAmbientModeChanged()
 
             // Check and trigger whether or not timer should be running (only
             // in active mode).
@@ -326,6 +348,8 @@ class MyWatchFace : CanvasWatchFaceService() {
             if (!mBurnInProtection && !mLowBitAmbient) {
                 initGrayBackgroundBitmap()
             }
+
+            //TODO Step 6: Add code to position complications
         }
 
         private fun initGrayBackgroundBitmap() {
@@ -348,6 +372,7 @@ class MyWatchFace : CanvasWatchFaceService() {
          * used for implementing specific logic to handle the gesture.
          */
         override fun onTapCommand(tapType: Int, x: Int, y: Int, eventTime: Long) {
+            //TODO Step 7: Completely replace this function with one specific to complications
             when (tapType) {
                 WatchFaceService.TAP_TYPE_TOUCH -> {
                     // The user has started touching the screen.
@@ -357,7 +382,6 @@ class MyWatchFace : CanvasWatchFaceService() {
                 }
                 WatchFaceService.TAP_TYPE_TAP ->
                     // The user has completed the tap gesture.
-                    // TODO: Add code to handle the tap gesture.
                     Toast.makeText(applicationContext, R.string.message, Toast.LENGTH_SHORT)
                         .show()
             }
@@ -369,6 +393,9 @@ class MyWatchFace : CanvasWatchFaceService() {
             mCalendar.timeInMillis = now
 
             drawBackground(canvas)
+
+            //TODO Step 8: Add drawComplications()
+
             drawWatchFace(canvas)
         }
 
@@ -528,5 +555,19 @@ class MyWatchFace : CanvasWatchFaceService() {
                 mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs)
             }
         }
+
+        //TODO Step 9.1: initializeComplications()
+
+
+        //TODO Step 9.2: onComplicationDataUpdate()
+
+
+        //TODO Step 9.3: getTappedComplicationId()
+
+
+        //TODO Step 9.4: onComplicationTap()
+
+
+        //TODO Step 9.5: drawComplications()
     }
 }
