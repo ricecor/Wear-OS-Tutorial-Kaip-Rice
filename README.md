@@ -83,12 +83,14 @@ https://www.youtube.com/watch?v=5iJZ_JTUXZc
 ### Creating a new face
 Create a new watchface by navigating to File>New>Wear>Watch Face, change the style to "Digital" and click "Finish"
 
+
 ### Update the manifest
 Open up the manifest file and locate the watchface you just created. Then insert
 ```
 android:exported="true"
 ```
 under android:label. Go ahead and change the label to refelct what you want your new watch face to be called.
+
 
 ### Add your own font
 Create a new assets folder in your project directory and add a new directory to the folder called "font". You can now add your .ttf file of choice into this folder. Locate 
@@ -100,6 +102,7 @@ at the top of your main file and remove that line. Scroll down to your onCreate(
 val NORMAL_TYPEFACE = Typeface.createFromAsset(getBaseContext().getAssets(), "font/blockgame.ttf")
 ```
 replace "blockgame.ttf" with the name of your font file
+
 
 ### Changing the background
 Drag an image file into the "Drawable" folder. Then add this variable to the top of your inner class:
@@ -131,6 +134,7 @@ override fun onSurfaceChanged(holder: SurfaceHolder, format: Int, width: Int, he
 ```
 This will dynamically adjust your background image.
 
+
 ### Adjusting positioning
 For this tutorial, we are going to center our text on the screen, add this to your "mTextPaint" object:
 ```
@@ -147,7 +151,24 @@ canvas.drawText(text, mYOffset, mYOffset, mTextPaint)
 
 You should now have a customized digital watchface!
 
-# Complications Feature
-Compliications is a feature in WearOS that allows users to to add quick access and information to be displayed on the watch face from different apps. For example as you can see in the screenshot you can display the battery life of the watch and reminders.
 
-These are just two examples of many different combinations that the user can use. It is complex to add these to your watch in android studio. That being said if you clone our repo you can check out the complication code and familiarize yourself with what needs to be done on your watch. This code is located in the analog watch folder. There is changes to the mywatchface.kt and the new complications.kt file. This a a very strong feature in WearOS so be sure to check out those files.
+# Complications Feature
+Complications is a feature in WearOS that allows users to to add quick access and information to be displayed on the watch face from different apps. For example, you can display the battery life of the watch, calendar events, and reminders all on your watchface.
+
+Our tutorial is based on an existing tutorial from Android https://developer.android.com/codelabs/complications#-1. This tutorial is written in Java and requires you to download their project file to follow along. We have converted the code to Kotlin and designed our tutorial to work with **your** project.
+
+## Adding required resources
+Adding complications to your watchface requires extra files to display correctly. Go ahead and download these files and add them to the "drawable" directory in your project:
+[add_complication.png](WatchFaceTutorial/app/src/main/res/drawable-nodpi/add_complication.png)
+[added_complication.png](WatchFaceTutorial/app/src/main/res/drawable-nodpi/added_complication.png)
+[custom_complication_styles.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/custom_complication_styles.xml)
+[settings_watch_face_preview_arms_and_ticks.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_arms_and_ticks.xml)
+[settings_watch_face_preview_background.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_background.xml)
+[settings_watch_face_preview_highlight.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_highlight.xml)
+
+Next, if you don't already have one, you'll want to create a layout directory by right clicking on your "res" directory and navigating to New>Android Resource Directory and changing the name to "layout" and selecting "layout" from the first dropdown. Once you have created your new "layout" directory, add this file to it:
+[activity_config.xml](WatchFaceTutorial/app/src/main/res/layout/activity_config.xml)
+
+The last file you will need to download is the ComplicationConfigActivity.kt file and add this to the directory with your main class, confirming it is imported as a Kotlin Class:
+[ComplicationConfigActivity.kt](WatchFaceTutorial/app/src/main/java/com/example/myfirstwatchface/ComplicationConfigActivity.kt)
+Make sure to adjust the package to reflect your own. You will also need to replace all instances of "MyWatchFace" with the name of your main kotlin file.
