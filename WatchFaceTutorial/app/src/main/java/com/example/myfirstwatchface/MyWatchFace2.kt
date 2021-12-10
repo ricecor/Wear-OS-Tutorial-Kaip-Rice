@@ -1,15 +1,14 @@
 package com.example.myfirstwatchface
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.app.PendingIntent.CanceledException
+import android.content.*
 import android.graphics.*
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.support.wearable.complications.ComplicationData
+import android.support.wearable.complications.ComplicationHelperActivity
 import android.support.wearable.complications.rendering.ComplicationDrawable
 import android.support.wearable.watchface.CanvasWatchFaceService
 import android.support.wearable.watchface.WatchFaceService
@@ -45,10 +44,6 @@ class MyWatchFace2 : CanvasWatchFaceService() {
     private val RIGHT_COMPLICATION_ID = 1
 
     private val COMPLICATION_IDS = intArrayOf(LEFT_COMPLICATION_ID, RIGHT_COMPLICATION_ID)
-
-    private var mActiveComplicationDataSparseArray: SparseArray<ComplicationData>? = null
-
-    private var mComplicationDrawableSparseArray: SparseArray<ComplicationDrawable>? = null
 
     private val COMPLICATION_SUPPORTED_TYPES = arrayOf(
         intArrayOf(
@@ -143,6 +138,12 @@ class MyWatchFace2 : CanvasWatchFaceService() {
         private var mBurnInProtection: Boolean = false
         private var mAmbient: Boolean = false
 
+        //1.1
+        private var mActiveComplicationDataSparseArray: SparseArray<ComplicationData>? = null
+
+        private var mComplicationDrawableSparseArray: SparseArray<ComplicationDrawable>? = null
+        //1.1
+
         private val mUpdateTimeHandler: Handler = EngineHandler(this)
 
         private val mTimeZoneReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -192,11 +193,6 @@ class MyWatchFace2 : CanvasWatchFaceService() {
             }
         }
 
-        override fun onDestroy() {
-            mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME)
-            super.onDestroy()
-        }
-
         //2
         private fun initializeComplications() {
             Log.d("Complication:", "initializeComplications() ran")
@@ -211,13 +207,13 @@ class MyWatchFace2 : CanvasWatchFaceService() {
             mComplicationDrawableSparseArray!!.put(LEFT_COMPLICATION_ID, leftComplicationDrawable)
             mComplicationDrawableSparseArray!!.put(RIGHT_COMPLICATION_ID, rightComplicationDrawable)
             setActiveComplications(LEFT_COMPLICATION_ID)
-            setActiveComplications(RIGHT_COMPLICATION_ID)
         }
 
         override fun onComplicationDataUpdate(
             complicationId: Int, complicationData: ComplicationData?
         ) {
-            Log.d("Complications:", "onComplicationDataUpdate() id: $complicationId")
+            Log.d("Complications!: ", "onComplicationDataUpdate() id: $complicationId"
+            )
 
             // Adds/updates active complication data in the array.
             mActiveComplicationDataSparseArray!!.put(complicationId, complicationData)
@@ -227,9 +223,15 @@ class MyWatchFace2 : CanvasWatchFaceService() {
             complicationDrawable.setComplicationData(complicationData)
             invalidate()
         }
-
         //2
 
+        override fun onDestroy() {
+            mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME)
+            super.onDestroy()
+        }
+
+
+        @RequiresApi(Build.VERSION_CODES.S)
         override fun onPropertiesChanged(properties: Bundle) {
             super.onPropertiesChanged(properties)
             mLowBitAmbient = properties.getBoolean(
@@ -238,6 +240,22 @@ class MyWatchFace2 : CanvasWatchFaceService() {
             mBurnInProtection = properties.getBoolean(
                 WatchFaceService.PROPERTY_BURN_IN_PROTECTION, false
             )
+
+            // Updates complications to properly render in ambient mode based on the
+            // screen's capabilities.
+
+            // Updates complications to properly render in ambient mode based on the
+            // screen's capabilities.
+            var complicationDrawable: ComplicationDrawable?
+
+            for (i in COMPLICATION_IDS.indices) {
+                complicationDrawable =
+                    mComplicationDrawableSparseArray!![COMPLICATION_IDS[i]]
+                if (complicationDrawable != null) {
+                    complicationDrawable.setLowBitAmbient(mLowBitAmbient)
+                    complicationDrawable.setBurnInProtection(mBurnInProtection)
+                }
+            }
         }
 
         override fun onTimeTick() {
@@ -245,12 +263,23 @@ class MyWatchFace2 : CanvasWatchFaceService() {
             invalidate()
         }
 
+        @RequiresApi(Build.VERSION_CODES.S)
         override fun onAmbientModeChanged(inAmbientMode: Boolean) {
             super.onAmbientModeChanged(inAmbientMode)
             mAmbient = inAmbientMode
 
             if (mLowBitAmbient) {
                 mTextPaint.isAntiAlias = !inAmbientMode
+            }
+
+            //updateWatchHandStyles()
+
+            var complicationDrawable: ComplicationDrawable
+
+            for (i in COMPLICATION_IDS.indices) {
+                complicationDrawable =
+                    mComplicationDrawableSparseArray!![COMPLICATION_IDS[i]]
+                complicationDrawable.setInAmbientMode(mAmbient)
             }
 
             // Whether the timer should be running depends on whether we"re visible (as well as
@@ -262,7 +291,7 @@ class MyWatchFace2 : CanvasWatchFaceService() {
          * Captures tap event (and tap type) and toggles the background color if the user finishes
          * a tap.
          */
-        override fun onTapCommand(tapType: Int, x: Int, y: Int, eventTime: Long) {
+        /*override fun onTapCommand(tapType: Int, x: Int, y: Int, eventTime: Long) {
             when (tapType) {
                 WatchFaceService.TAP_TYPE_TOUCH -> {
                     // The user has started touching the screen.
@@ -277,6 +306,77 @@ class MyWatchFace2 : CanvasWatchFaceService() {
                         .show()
             }
             invalidate()
+        }*/
+
+        @RequiresApi(Build.VERSION_CODES.S)
+        override fun onTapCommand(tapType: Int, x: Int, y: Int, eventTime: Long) {
+            // TODO: Step 5, OnTapCommand()
+            Log.d("Complications!:", "OnTapCommand()")
+            when (tapType) {
+                TAP_TYPE_TAP -> {
+                    val tappedComplicationId: Int = getTappedComplicationId(x, y)
+                    if (tappedComplicationId != -1) {
+                        onComplicationTap(tappedComplicationId)
+                    }
+                }
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.S)
+        private fun getTappedComplicationId(x: Int, y: Int): Int {
+            var complicationId: Int
+            var complicationData: ComplicationData?
+            var complicationDrawable: ComplicationDrawable
+            val currentTimeMillis = System.currentTimeMillis()
+            for (i in COMPLICATION_IDS.indices) {
+                complicationId = COMPLICATION_IDS[i]
+                complicationData = mActiveComplicationDataSparseArray!![complicationId]
+                if (complicationData != null
+                    && complicationData.isActive(currentTimeMillis)
+                    && complicationData.type != ComplicationData.TYPE_NOT_CONFIGURED
+                    && complicationData.type != ComplicationData.TYPE_EMPTY
+                ) {
+                    complicationDrawable = mComplicationDrawableSparseArray!![complicationId]
+                    val complicationBoundingRect = complicationDrawable.bounds
+                    if (complicationBoundingRect.width() > 0) {
+                        if (complicationBoundingRect.contains(x, y)) {
+                            return complicationId
+                        }
+                    } else {
+                        Log.e("Complications!:","Not a recognized complication id.")
+                    }
+                }
+            }
+            return -1
+        }
+
+        private fun onComplicationTap(complicationId: Int) {
+            // TODO: Step 5, onComplicationTap()
+            Log.d("Complications!:", "onComplicationTap()")
+            val complicationData = mActiveComplicationDataSparseArray!![complicationId]
+            if (complicationData != null) {
+                if (complicationData.tapAction != null) {
+                    try {
+                        complicationData.tapAction.send()
+                    } catch (e: CanceledException) {
+                        Log.e("Complications!:", "onComplicationTap() tap action error: $e")
+                    }
+                } else if (complicationData.type == ComplicationData.TYPE_NO_PERMISSION) {
+
+                    // Watch face does not have permission to receive complication data, so launch
+                    // permission request.
+                    val componentName = ComponentName(
+                        applicationContext, MyWatchFace2::class.java
+                    )
+                    val permissionRequestIntent =
+                        ComplicationHelperActivity.createPermissionRequestHelperIntent(
+                            applicationContext, componentName
+                        )
+                    startActivity(permissionRequestIntent)
+                }
+            } else {
+                Log.d("Complications!:", "No PendingIntent for complication $complicationId.")
+            }
         }
 
         override fun onSurfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -324,6 +424,7 @@ class MyWatchFace2 : CanvasWatchFaceService() {
             //4
         }
 
+        @RequiresApi(Build.VERSION_CODES.S)
         override fun onDraw(canvas: Canvas, bounds: Rect) {
             // Draw the background.
             if (mAmbient) {
@@ -347,6 +448,8 @@ class MyWatchFace2 : CanvasWatchFaceService() {
                     mCalendar.get(Calendar.MINUTE), mCalendar.get(Calendar.SECOND)
                 )
             canvas.drawText(text, mYOffset, mYOffset, mTextPaint)
+
+            drawComplications(canvas, now)
         }
 
         @RequiresApi(Build.VERSION_CODES.S)
