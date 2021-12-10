@@ -34,7 +34,16 @@ Now to actually make your own personal analog watch face. Watch this short tutor
 
 https://youtu.be/oC6_8MoG5pc
 
-
+## Step-by-step
+To start lets change the background image. This is pretty simple. First find the drawable folder in your directory and put the image you want in there. The file can be a .png or .jpeg. Make sure you know the name of the file. 
+Next in 
+```
+private fun initializeBackground()
+```
+Find mBackgroundBitmap and at the end of that line you will see the defult dog picture. Put the name of your picture in place of that. Here is the line from the video:
+```
+mBackgroundBitmap = BitmapFactory.decodeResource(resources, R.drawable.background_image)
+```
 # Digital Watch Face Tutorial
 
 Youtube Tutorial for Digital Clock:
