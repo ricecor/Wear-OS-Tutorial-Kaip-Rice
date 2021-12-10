@@ -35,6 +35,7 @@ Now to actually make your own personal analog watch face. Watch this short tutor
 https://youtu.be/oC6_8MoG5pc
 
 ## Step-by-step
+#### Background 
 To start lets change the background image. This is pretty simple. First find the drawable folder in your directory and put the image you want in there. The file can be a .png or .jpeg. Make sure you know the name of the file. 
 Next in 
 ```
@@ -44,6 +45,35 @@ Find mBackgroundBitmap and at the end of that line you will see the defult dog p
 ```
 mBackgroundBitmap = BitmapFactory.decodeResource(resources, R.drawable.background_image)
 ```
+
+### Styling
+For styling you are going to be working under the same function as before. The lines you will be looking for are:
+```
+mWatchHandHighlightColor = it.getVibrantColor(Color.GREEN)
+mWatchHandColor = it.getLightVibrantColor(Color.RED)
+mWatchHandShadowColor = it.getDarkMutedColor(Color.GREEN)
+```
+Change the colors at the end of the line to whatever you feel like that goes best with your theme. Be sure to also change the lines under the initializeWatchFace() function to the same colors. This function is right under the initializeBackground() function and the lines you want to change are:
+```
+mWatchHandColor = Color.RED
+mWatchHandHighlightColor = Color.GREEN
+mWatchHandShadowColor = Color.GREEN
+```
+
+### Hour Numbers
+
+Now for the hour indicators it will be two lines of code that you have to write under the drawWatchFace(canvas: Canvas) function. In the for loop labeled 
+```
+for (tickIndex in 0..11)
+```
+at the top of the file you must go to the bottom and write:
+```
+val hour = (tickIndex).toString()
+canvas.drawText(hour, (mCenterX + innerX), (mCenterY + innerY), mTickAndCirclePaint)
+```
+This uses the tickIndex to put the strings on screen with the canvas actually draw the text onto the watch face.
+
+
 # Digital Watch Face Tutorial
 
 Youtube Tutorial for Digital Clock:
