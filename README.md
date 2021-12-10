@@ -79,6 +79,74 @@ This uses the tickIndex to put the strings on screen with the canvas actually dr
 Youtube Tutorial for Digital Clock:
 https://www.youtube.com/watch?v=5iJZ_JTUXZc
 
+## Step-by-step
+### Creating a new face
+Create a new watchface by navigating to File>New>Wear>Watch Face, change the style to "Digital" and click "Finish"
+
+### Update the manifest
+Open up the manifest file and locate the watchface you just created. Then insert
+```
+android:exported="true"
+```
+under android:label. Go ahead and change the label to refelct what you want your new watch face to be called.
+
+### Add your own font
+Create a new assets folder in your project directory and add a new directory to the folder called "font". You can now add your .ttf file of choice into this folder. Locate 
+```
+val NORMAL_TYPEFACE = Typeface.create(SANS_SERIF, Typeface.NORMAL)
+```
+at the top of your main file and remove that line. Scroll down to your onCreate() method and add this line:
+```
+val NORMAL_TYPEFACE = Typeface.createFromAsset(getBaseContext().getAssets(), "font/blockgame.ttf")
+```
+replace "blockgame.ttf" with the name of your font file
+
+### Changing the background
+Drag an image file into the "Drawable" folder. Then add this variable to the top of your inner class:
+```
+private lateinit var mBackgroundBitmap: Bitmap
+```
+and paste this code into your onCreate() method:
+```
+mBackgroundBitmap = BitmapFactory.decodeResource(resources, R.drawable.windows)
+```
+replacing "windows" with the name of your picture file. Navigate to the onDraw() method and replace the "canvas.drawRect(...)" statement with
+```
+canvas.drawBitmap(mBackgroundBitmap, 0f, 0f, mBackgroundPaint)
+```
+If your background doesn't fill the screen completely, you'll need to add an onSurfaceChanged() method to adjust the image to the screen of your device:
+```
+override fun onSurfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+            super.onSurfaceChanged(holder, format, width, height)
+            /* Scale loaded background image (more efficient) if surface dimensions change. */
+            val scale = width.toFloat() / mBackgroundBitmap.width.toFloat()
+            val scaleH = height.toFloat() / mBackgroundBitmap.height.toFloat()
+
+            mBackgroundBitmap = Bitmap.createScaledBitmap(
+                mBackgroundBitmap,
+                (mBackgroundBitmap.width * scale).toInt(),
+                (mBackgroundBitmap.height * scaleH).toInt(), true
+            )
+        }
+```
+This will dynamically adjust your background image.
+
+### Adjusting positioning
+For this tutorial, we are going to center our text on the screen, add this to your "mTextPaint" object:
+```
+textAlign = Paint.Align.CENTER
+```
+Now that we changed the alignment, we need to adjust the positioning of the text. Go to your onSurfaceChanged() method and add
+```
+mYOffset = mBackgroundBitmap.height / 2f
+```
+to the bottom. Then go back to onDraw() and change the X coordinate of your text to also use "mYOffset"
+```
+canvas.drawText(text, mYOffset, mYOffset, mTextPaint)
+```
+
+You should now have a customized digital watchface!
+
 # Complications Feature
 Compliications is a feature in WearOS that allows users to to add quick access and information to be displayed on the watch face from different apps. For example as you can see in the screenshot you can display the battery life of the watch and reminders.
 
