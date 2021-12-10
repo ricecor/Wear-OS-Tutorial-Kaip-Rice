@@ -30,16 +30,12 @@ One more note to get started. To launch the project make sure you edit your conf
 
 # Analog Watch Face Tutorial
 
-Now to actually make your own personal analog watch face. Watch these short tutorials for a quick rundown on how to change these componantes on your own watch face.
+Now to actually make your own personal analog watch face. Watch this short tutorial for a quick rundown on how to change these componantes on your own watch face.
 
-How to change the Background image:
-
-How yo add numbers to hour tick marks:
-
-How to style your clock components:
+https://youtu.be/oC6_8MoG5pc
 
 
 # Digital Watch Face Tutorial
 
-Youtube Tutorial:
+Youtube Tutorial for Digital Clock:
 https://www.youtube.com/watch?v=5iJZ_JTUXZc
