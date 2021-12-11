@@ -2,6 +2,8 @@
 
 This page is a tutorial on how to get started with Wear OS and to get you on the path of starting you first Wear OS watch face.
 
+If you plan on cloning this repo to run our code, you must be sure to open the **"WatchFaceTutorial"** folder in Android Studio, not the "Wear-OS-Tutorial-Kaip-Rice" folder.
+
 # Getting Started
 To start, we will be working with Kotlin through the Intelij IDE with Android Studio. First, you will have to download Android Studio (Link: https://developer.android.com/studio) This will be the tool we use to creat the watch face.
 
