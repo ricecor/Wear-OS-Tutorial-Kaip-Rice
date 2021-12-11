@@ -32,7 +32,7 @@ One more note to get started. To launch the project make sure you edit your conf
 
 Now to actually make your own personal analog watch face. Watch this short tutorial for a quick rundown on how to change these componantes on your own watch face.
 
-https://youtu.be/oC6_8MoG5pc
+[Tutorial Video](https://youtu.be/oC6_8MoG5pc)
 
 ## Step-by-step
 #### Background 
@@ -76,8 +76,7 @@ This uses the tickIndex to put the strings on screen with the canvas actually dr
 
 # Digital Watch Face Tutorial
 
-Youtube Tutorial for Digital Clock:
-https://www.youtube.com/watch?v=5iJZ_JTUXZc
+[Youtube Tutorial for Digital Clock](https://www.youtube.com/watch?v=5iJZ_JTUXZc)
 
 ## Step-by-step
 ### Creating a new face
@@ -157,6 +156,8 @@ Complications is a feature in WearOS that allows users to to add quick access an
 
 Our tutorial is based on an existing tutorial from Android https://developer.android.com/codelabs/complications#-1. This tutorial is written in Java and requires you to download their project file to follow along. We have converted the code to Kotlin and designed our tutorial to work with **your** project.
 
+[Tutorial video](https://youtu.be/SRBprS7IMqc)
+
 ## Adding required resources
 Adding complications to your watchface requires extra files to display correctly. Go ahead and download these files and add them to the "drawable" directory in your project: <br />
 [add_complication.png](WatchFaceTutorial/app/src/main/res/drawable-nodpi/add_complication.png) <br />
@@ -180,6 +181,7 @@ Begin by adding the following import:
 import com.example.myfirstwatchface.ComplicationConfigActivity.ComplicationLocation
 ```
 replacing "myfirstwatchface" with what is included in your package name. 
+
 
 ### Step 1
 Then add the following code to the top of your class:
