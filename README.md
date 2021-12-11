@@ -158,17 +158,310 @@ Complications is a feature in WearOS that allows users to to add quick access an
 Our tutorial is based on an existing tutorial from Android https://developer.android.com/codelabs/complications#-1. This tutorial is written in Java and requires you to download their project file to follow along. We have converted the code to Kotlin and designed our tutorial to work with **your** project.
 
 ## Adding required resources
-Adding complications to your watchface requires extra files to display correctly. Go ahead and download these files and add them to the "drawable" directory in your project:
-[add_complication.png](WatchFaceTutorial/app/src/main/res/drawable-nodpi/add_complication.png)
-[added_complication.png](WatchFaceTutorial/app/src/main/res/drawable-nodpi/added_complication.png)
-[custom_complication_styles.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/custom_complication_styles.xml)
-[settings_watch_face_preview_arms_and_ticks.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_arms_and_ticks.xml)
-[settings_watch_face_preview_background.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_background.xml)
-[settings_watch_face_preview_highlight.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_highlight.xml)
+Adding complications to your watchface requires extra files to display correctly. Go ahead and download these files and add them to the "drawable" directory in your project: <br />
+[add_complication.png](WatchFaceTutorial/app/src/main/res/drawable-nodpi/add_complication.png) <br />
+[added_complication.png](WatchFaceTutorial/app/src/main/res/drawable-nodpi/added_complication.png) <br />
+[custom_complication_styles.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/custom_complication_styles.xml) <br />
+[settings_watch_face_preview_arms_and_ticks.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_arms_and_ticks.xml) <br />
+[settings_watch_face_preview_background.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_background.xml) <br />
+[settings_watch_face_preview_highlight.xml](WatchFaceTutorial/app/src/main/res/drawable-nodpi/settings_watch_face_preview_highlight.xml) <br />
 
-Next, if you don't already have one, you'll want to create a layout directory by right clicking on your "res" directory and navigating to New>Android Resource Directory and changing the name to "layout" and selecting "layout" from the first dropdown. Once you have created your new "layout" directory, add this file to it:
-[activity_config.xml](WatchFaceTutorial/app/src/main/res/layout/activity_config.xml)
+Next, if you don't already have one, you'll want to create a layout directory by right clicking on your "res" directory and navigating to New>Android Resource Directory and changing the name to "layout" and selecting "layout" from the first dropdown. Once you have created your new "layout" directory, add this file to it: <br />
+[activity_config.xml](WatchFaceTutorial/app/src/main/res/layout/activity_config.xml) <br />
 
-The last file you will need to download is the ComplicationConfigActivity.kt file and add this to the directory with your main class, confirming it is imported as a Kotlin Class:
-[ComplicationConfigActivity.kt](WatchFaceTutorial/app/src/main/java/com/example/myfirstwatchface/ComplicationConfigActivity.kt)
+The last file you will need to download is the ComplicationConfigActivity.kt file and add this to the directory with your main class, confirming it is imported as a Kotlin Class: <br />
+[ComplicationConfigActivity.kt](WatchFaceTutorial/app/src/main/java/com/example/myfirstwatchface/ComplicationConfigActivity.kt) <br />
 Make sure to adjust the package to reflect your own. You will also need to replace all instances of "MyWatchFace" with the name of your main kotlin file.
+
+
+## Modifying the main kotlin class
+Begin by adding the following import:
+```
+import com.example.myfirstwatchface.ComplicationConfigActivity.ComplicationLocation
+```
+replacing "myfirstwatchface" with what is included in your package name. 
+
+### Step 1
+Then add the following code to the top of your class:
+```
+    private val LEFT_COMPLICATION_ID = 0
+    private val RIGHT_COMPLICATION_ID = 1
+
+    private val COMPLICATION_IDS = kotlin.intArrayOf(LEFT_COMPLICATION_ID, RIGHT_COMPLICATION_ID)
+
+    private val COMPLICATION_SUPPORTED_TYPES = arrayOf(
+        intArrayOf(
+            ComplicationData.TYPE_RANGED_VALUE,
+            ComplicationData.TYPE_ICON,
+            ComplicationData.TYPE_SHORT_TEXT,
+            ComplicationData.TYPE_SMALL_IMAGE
+        ), intArrayOf(
+            ComplicationData.TYPE_RANGED_VALUE,
+            ComplicationData.TYPE_ICON,
+            ComplicationData.TYPE_SHORT_TEXT,
+            ComplicationData.TYPE_SMALL_IMAGE
+        )
+    )
+
+    fun getComplicationId(
+        complicationLocation: ComplicationLocation?
+    ): Int {
+        // Add any other supported locations here you would like to support. In our case, we are
+        // only supporting a left and right complication.
+        return when (complicationLocation) {
+            ComplicationLocation.LEFT -> LEFT_COMPLICATION_ID
+            ComplicationLocation.RIGHT -> RIGHT_COMPLICATION_ID
+            else -> -1
+        }
+    }
+
+    fun getComplicationIds(): IntArray {
+        return COMPLICATION_IDS
+    }
+
+    fun getSupportedComplicationTypes(
+        complicationLocation: ComplicationLocation?
+    ): IntArray {
+        // Add any other supported locations here.
+        return when (complicationLocation) {
+            ComplicationLocation.LEFT -> COMPLICATION_SUPPORTED_TYPES[0]
+            ComplicationLocation.RIGHT -> COMPLICATION_SUPPORTED_TYPES[1]
+            else -> intArrayOf()
+        }
+    }
+```
+
+### Step 2
+At the top of your inner class, add this snippet to create two sparse arrays:
+```
+        private var mActiveComplicationDataSparseArray: SparseArray<ComplicationData>? = null
+        private var mComplicationDrawableSparseArray: SparseArray<ComplicationDrawable>? = null
+```
+
+
+### Step 3
+In your onCreate() method, add this statement to initialize your complications:
+```
+initializeComplications()
+```
+
+
+### Step 4
+Add this code to the onPropertiesChanged() method. This should cause an error that can be quickly resolved by adding "@RequiresApi(Build.VERSION_CODES.S)" above the function declaration. This should be repeated for all errors of the like.
+```
+            var complicationDrawable: ComplicationDrawable?
+
+            for (i in COMPLICATION_IDS.indices) {
+                complicationDrawable =
+                    mComplicationDrawableSparseArray!![COMPLICATION_IDS[i]]
+                if (complicationDrawable != null) {
+                    complicationDrawable.setLowBitAmbient(mLowBitAmbient)
+                    complicationDrawable.setBurnInProtection(mBurnInProtection)
+                }
+            }
+```
+
+
+### Step 5
+In onAmbientModeChanged(), add this code. This will make your complications react appropriately when your watch enters ambient mode.
+```
+            var complicationDrawable: ComplicationDrawable
+
+            for (i in COMPLICATION_IDS.indices) {
+                complicationDrawable =
+                    mComplicationDrawableSparseArray!![COMPLICATION_IDS[i]]
+                complicationDrawable.setInAmbientMode(mAmbient)
+            }
+```
+
+
+### Step 6
+To handle where your complications are positioned on the screen, add this large chunk of code to the onSurfaceChanged() function:
+```
+            val sizeOfComplication = width / 4
+            val midpointOfScreen = width / 2
+
+            val horizontalOffset = (midpointOfScreen - sizeOfComplication) / 2
+            val verticalOffset = midpointOfScreen - sizeOfComplication / 2
+
+            val leftBounds =  // Left, Top, Right, Bottom
+                Rect(
+                    horizontalOffset,
+                    verticalOffset,
+                    horizontalOffset + sizeOfComplication,
+                    verticalOffset + sizeOfComplication
+                )
+
+            val leftComplicationDrawable = mComplicationDrawableSparseArray!![LEFT_COMPLICATION_ID]
+            leftComplicationDrawable.bounds = leftBounds
+
+            val rightBounds =  // Left, Top, Right, Bottom
+                Rect(
+                    midpointOfScreen + horizontalOffset,
+                    verticalOffset,
+                    midpointOfScreen + horizontalOffset + sizeOfComplication,
+                    verticalOffset + sizeOfComplication
+                )
+
+            val rightComplicationDrawable =
+                mComplicationDrawableSparseArray!![RIGHT_COMPLICATION_ID]
+            rightComplicationDrawable.bounds = rightBounds
+```
+
+
+### Step 7
+If your watchface doesn't currently perform any actions when you tap the screen, replace the inside of onTapCommand() with
+```
+            Log.d("Complications!:", "OnTapCommand()")
+            when (tapType) {
+                TAP_TYPE_TAP -> {
+                    val tappedComplicationId: Int = getTappedComplicationId(x, y)
+                    if (tappedComplicationId != -1) {
+                        onComplicationTap(tappedComplicationId)
+                    }
+                }
+            }
+```
+Otherwise you can only add the code that follows "TAP_TYPE_TAP".
+
+
+### Step 8
+In onDraw(), insert this code in-between drawBackground(canvas) and drawWatchFace(canvas):
+```
+            drawComplications(canvas, now)
+```
+
+
+### Step 9
+You will now need to add multiple functions to the bottom of the inner class to support the creation and function of your complications:
+```
+private fun initializeComplications() {
+            Log.d("Complication:", "initializeComplications() ran")
+            mActiveComplicationDataSparseArray = SparseArray(COMPLICATION_IDS.size)
+            val leftComplicationDrawable =
+                getDrawable(R.drawable.custom_complication_styles) as ComplicationDrawable?
+            leftComplicationDrawable!!.setContext(applicationContext)
+            val rightComplicationDrawable =
+                getDrawable(R.drawable.custom_complication_styles) as ComplicationDrawable?
+            rightComplicationDrawable!!.setContext(applicationContext)
+            mComplicationDrawableSparseArray = SparseArray(COMPLICATION_IDS.size)
+            mComplicationDrawableSparseArray!!.put(LEFT_COMPLICATION_ID, leftComplicationDrawable)
+            mComplicationDrawableSparseArray!!.put(RIGHT_COMPLICATION_ID, rightComplicationDrawable)
+            setActiveComplications(LEFT_COMPLICATION_ID, RIGHT_COMPLICATION_ID)
+        }
+
+        override fun onComplicationDataUpdate(
+            complicationId: Int, complicationData: ComplicationData?
+        ) {
+            Log.d("Complications!: ", "onComplicationDataUpdate() id: $complicationId"
+            )
+
+            // Adds/updates active complication data in the array.
+            mActiveComplicationDataSparseArray!!.put(complicationId, complicationData)
+
+            // Updates correct ComplicationDrawable with updated data.
+            val complicationDrawable = mComplicationDrawableSparseArray!![complicationId]
+            complicationDrawable.setComplicationData(complicationData)
+            invalidate()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.S)
+        private fun getTappedComplicationId(x: Int, y: Int): Int {
+            var complicationId: Int
+            var complicationData: ComplicationData?
+            var complicationDrawable: ComplicationDrawable
+            val currentTimeMillis = System.currentTimeMillis()
+            for (i in COMPLICATION_IDS.indices) {
+                complicationId = COMPLICATION_IDS[i]
+                complicationData = mActiveComplicationDataSparseArray!![complicationId]
+                if (complicationData != null
+                    && complicationData.isActive(currentTimeMillis)
+                    && complicationData.type != ComplicationData.TYPE_NOT_CONFIGURED
+                    && complicationData.type != ComplicationData.TYPE_EMPTY
+                ) {
+                    complicationDrawable = mComplicationDrawableSparseArray!![complicationId]
+                    val complicationBoundingRect = complicationDrawable.bounds
+                    if (complicationBoundingRect.width() > 0) {
+                        if (complicationBoundingRect.contains(x, y)) {
+                            return complicationId
+                        }
+                    } else {
+                        Log.e("Complications!:","Not a recognized complication id.")
+                    }
+                }
+            }
+            return -1
+        }
+
+        private fun onComplicationTap(complicationId: Int) {
+            Log.d("Complications!:", "onComplicationTap()")
+            val complicationData = mActiveComplicationDataSparseArray!![complicationId]
+            if (complicationData != null) {
+                if (complicationData.tapAction != null) {
+                    try {
+                        complicationData.tapAction.send()
+                    } catch (e: PendingIntent.CanceledException) {
+                        Log.e("Complications!:", "onComplicationTap() tap action error: $e")
+                    }
+                } else if (complicationData.type == ComplicationData.TYPE_NO_PERMISSION) {
+
+                    // Watch face does not have permission to receive complication data, so launch
+                    // permission request.
+                    val componentName = ComponentName(
+                        applicationContext, MyWatchFace::class.java
+                    )
+                    val permissionRequestIntent =
+                        ComplicationHelperActivity.createPermissionRequestHelperIntent(
+                            applicationContext, componentName
+                        )
+                    startActivity(permissionRequestIntent)
+                }
+            } else {
+                Log.d("Complications!:", "No PendingIntent for complication $complicationId.")
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.S)
+        private fun drawComplications(canvas: Canvas, currentTimeMillis: Long) {
+            var complicationId: Int
+            var complicationDrawable: ComplicationDrawable
+            for (i in 0 until COMPLICATION_IDS.size) {
+                complicationId = COMPLICATION_IDS[i]
+                complicationDrawable = mComplicationDrawableSparseArray!![complicationId]
+                complicationDrawable.draw(canvas, currentTimeMillis)
+            }
+        }
+```
+
+
+## Updating the manifest
+You should now be able to run your watchface and see that two complications appear. You won't have the ability to modify or configure them yet because we need to first add to the manifest file. In the AndroidManifest.xml, insert two new metadata tags to your watchface service:
+```
+<meta-data
+                android:name="com.google.android.wearable.watchface.wearableConfigurationAction"
+                android:value="androidx.wear.watchface.editor.action.WATCH_FACE_EDITOR" />
+            <meta-data
+                android:name="com.google.android.wearable.watchface.companionBuiltinConfigurationEnabled"
+                android:value="true" />
+```
+
+At the bottom of the application tag, add two new activity tags:
+```
+<activity android:name="android.support.wearable.complications.ComplicationHelperActivity"/>
+
+        <activity
+            android:name=".ComplicationConfigActivity"
+            android:label="My Analog"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.wear.watchface.editor.action.WATCH_FACE_EDITOR" />
+
+                <category android:name="com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+```
+
+Run your program one more time and you should see that your watchface now has a gear icon underneath it when you enter watchface selection. If you click on that gear you should be able to select which data you want in each complication.
+
+That is it! You should now have a watchface capable of displaying complications.
