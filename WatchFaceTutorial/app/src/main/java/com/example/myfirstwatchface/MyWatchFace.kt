@@ -31,6 +31,7 @@ import java.lang.ref.WeakReference
 import java.util.Calendar
 import java.util.TimeZone
 
+//TODO Step 0: Add import to include config file
 import com.example.myfirstwatchface.ComplicationConfigActivity.ComplicationLocation
 
 /**
@@ -67,6 +68,7 @@ private const val SHADOW_RADIUS = 6f
  */
 class MyWatchFace : CanvasWatchFaceService() {
 
+    //TODO Step 1.1: Instantiate complication IDs
     private val LEFT_COMPLICATION_ID = 0
     private val RIGHT_COMPLICATION_ID = 1
 
@@ -86,6 +88,7 @@ class MyWatchFace : CanvasWatchFaceService() {
         )
     )
 
+    //TODO Step 1.2: getComplicationID()
     fun getComplicationId(
         complicationLocation: ComplicationLocation?
     ): Int {
@@ -98,10 +101,12 @@ class MyWatchFace : CanvasWatchFaceService() {
         }
     }
 
+    //TODO Step 1.3: getComplicationIDs()
     fun getComplicationIds(): IntArray {
         return COMPLICATION_IDS
     }
 
+    //TODO Step 1.4: getSupportedComplicationTypes()
     fun getSupportedComplicationTypes(
         complicationLocation: ComplicationLocation?
     ): IntArray {
@@ -171,6 +176,7 @@ class MyWatchFace : CanvasWatchFaceService() {
             }
         }
 
+        //TODO Step 2: Instantiate sparse arrays
         private var mActiveComplicationDataSparseArray: SparseArray<ComplicationData>? = null
         private var mComplicationDrawableSparseArray: SparseArray<ComplicationDrawable>? = null
 
@@ -186,6 +192,7 @@ class MyWatchFace : CanvasWatchFaceService() {
             mCalendar = Calendar.getInstance()
 
             initializeBackground()
+            //TODO Step 3: add initializeComplications()
             initializeComplications()
             initializeWatchFace()
         }
@@ -270,6 +277,7 @@ class MyWatchFace : CanvasWatchFaceService() {
                 WatchFaceService.PROPERTY_BURN_IN_PROTECTION, false
             )
 
+            //TODO Step 4: Update onPropertiesChanged()
             var complicationDrawable: ComplicationDrawable?
 
             for (i in COMPLICATION_IDS.indices) {
@@ -294,6 +302,7 @@ class MyWatchFace : CanvasWatchFaceService() {
 
             updateWatchHandStyle()
 
+            //TODO Step 5: Do something similar for onAmbientModeChanged()
             var complicationDrawable: ComplicationDrawable
 
             for (i in COMPLICATION_IDS.indices) {
@@ -405,6 +414,7 @@ class MyWatchFace : CanvasWatchFaceService() {
                 initGrayBackgroundBitmap()
             }
 
+            //TODO Step 6: Add code to position complications
             val sizeOfComplication = width / 4
             val midpointOfScreen = width / 2
 
@@ -456,6 +466,7 @@ class MyWatchFace : CanvasWatchFaceService() {
          */
         @RequiresApi(Build.VERSION_CODES.S)
         override fun onTapCommand(tapType: Int, x: Int, y: Int, eventTime: Long) {
+            //TODO Step 7: Completely replace this function with one specific to complications
             Log.d("Complications!:", "OnTapCommand()")
             when (tapType) {
                 TAP_TYPE_TAP -> {
@@ -473,6 +484,7 @@ class MyWatchFace : CanvasWatchFaceService() {
             mCalendar.timeInMillis = now
 
             drawBackground(canvas)
+            //TODO Step 8: Add drawComplications()
             drawComplications(canvas, now)
             drawWatchFace(canvas)
         }
@@ -636,6 +648,7 @@ class MyWatchFace : CanvasWatchFaceService() {
             }
         }
 
+        //TODO Step 9.1: initializeComplications()
         private fun initializeComplications() {
             Log.d("Complication:", "initializeComplications() ran")
             mActiveComplicationDataSparseArray = SparseArray(COMPLICATION_IDS.size)
@@ -653,6 +666,7 @@ class MyWatchFace : CanvasWatchFaceService() {
             //(COMPLICATION_IDS)
         }
 
+        //TODO Step 9.2: onComplicationDataUpdate()
         override fun onComplicationDataUpdate(
             complicationId: Int, complicationData: ComplicationData?
         ) {
@@ -668,6 +682,7 @@ class MyWatchFace : CanvasWatchFaceService() {
             invalidate()
         }
 
+        //TODO Step 9.3: getTappedComplicationId()
         @RequiresApi(Build.VERSION_CODES.S)
         private fun getTappedComplicationId(x: Int, y: Int): Int {
             var complicationId: Int
@@ -696,6 +711,7 @@ class MyWatchFace : CanvasWatchFaceService() {
             return -1
         }
 
+        //TODO Step 9.4: onComplicationTap()
         private fun onComplicationTap(complicationId: Int) {
             Log.d("Complications!:", "onComplicationTap()")
             val complicationData = mActiveComplicationDataSparseArray!![complicationId]
@@ -724,6 +740,7 @@ class MyWatchFace : CanvasWatchFaceService() {
             }
         }
 
+        //TODO Step 9.5: drawComplications()
         @RequiresApi(Build.VERSION_CODES.S)
         private fun drawComplications(canvas: Canvas, currentTimeMillis: Long) {
             var complicationId: Int
